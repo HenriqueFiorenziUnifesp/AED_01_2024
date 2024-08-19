@@ -1,0 +1,41 @@
+#include <stdio.h>
+
+#define MAX 1024
+
+char imagem[MAX][MAX];
+int largura, altura;
+
+void preencher(int x, int y) {
+    if (x < 0 || x >= largura || y < 0 || y >= altura) return;
+    if (imagem[x][y] != '.') return;
+
+    imagem[x][y] = 'o';
+
+    preencher(x - 1, y);
+    preencher(x + 1, y);
+    preencher(x, y - 1);
+    preencher(x, y + 1);
+}
+
+int main() {
+    int i, j, contadorRegioes = 0;
+
+    scanf("%d %d", &largura, &altura);
+
+    for (i = 0; i < largura; i++) {
+        scanf("%s", imagem[i]);
+    }
+
+    for (i = 0; i < largura; i++) {
+        for (j = 0; j < altura; j++) {
+            if (imagem[i][j] == '.') {
+                preencher(i, j);
+                contadorRegioes++;
+            }
+        }
+    }
+
+    printf("%d\n", contadorRegioes);
+
+    return 0;
+}
