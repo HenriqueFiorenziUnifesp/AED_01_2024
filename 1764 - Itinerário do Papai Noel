@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int cidadeA, cidadeB, distancia;
+} Rota;
+
+int compararRotas(const void *a, const void *b) {
+    Rota *rotaA = (Rota *)a;
+    Rota *rotaB = (Rota *)b;
+    return rotaA->distancia - rotaB->distancia;
+}
+
+int encontrarPai(int pais[], int cidade) {
+    if (pais[cidade] != cidade)
+        pais[cidade] = encontrarPai(pais, pais[cidade]);
+    return pais[cidade];
+}
+
+void unirConjuntos(int pais[], int alturas[], int cidadeA, int cidadeB) {
+    int raizA = encontrarPai(pais, cidadeA);
+    int raizB = encontrarPai(pais, cidadeB);
+
+    if (alturas[raizA] < alturas[raizB])
+        pais[raizA] = raizB;
+    else if (alturas[raizA] > alturas[raizB])
+        pais[raizB] = raizA;
+    else {
+        pais[raizB] = raizA;
+        alturas[raizA]++;
+    }
+}
+
+int calcularMenorDistancia(Rota rotas[], int totalCidades, int totalRotas) {
+    qsort(rotas, totalRotas, sizeof(Rota), compararRotas);
+
+    int *pais = (int *)malloc(totalCidades * sizeof(int));
+    int *alturas = (int *)malloc(totalCidades * sizeof(int));
+    for (int i = 0; i < totalCidades; i++) {
+        pais[i] = i;
+        alturas[i] = 0;
+    }
+
+    int somaDistancia = 0;
+    int rotasIncluidas = 0;
+
+    for (int i = 0; i < totalRotas && rotasIncluidas < totalCidades - 1; i++) {
+        int cidadeA = rotas[i].cidadeA;
+        int cidadeB = rotas[i].cidadeB;
+
+        int raizA = encontrarPai(pais, cidadeA);
+        int raizB = encontrarPai(pais, cidadeB);
+
+        if (raizA != raizB) {
+            somaDistancia += rotas[i].distancia;
+            unirConjuntos(pais, alturas, raizA, raizB);
+            rotasIncluidas++;
+        }
+    }
+
+    free(pais);
+    free(alturas);
+
+    return somaDistancia;
+}
+
+int main() {
+    int totalCidades, totalRotas;
+    while (scanf("%d %d", &totalCidades &totalRotas), totalCidades && totalRotas) {
+        Rota *rotas = (Rota *)malloc(totalRotas * sizeof(Rota));
+
+        for (int i = 0; i < totalRotas; i++) {
+            scanf("%d %d %d", &rotas[i].cidadeA, &rotas[i].cidadeB, &rotas[i].distancia);
+        }
+
+        int resultado = calcularMenorDistancia(rotas, totalCidades, totalRotas);
+        printf("%d\n", resultado);
+
+        free(rotas);
+    }
+
+    return 0;
+}
