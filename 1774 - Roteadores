@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int origem, destino, custo;
+} Cabo;
+
+int encontrarRaiz(int parent[], int i) {
+    if (parent[i] == i)
+        return i;
+    return encontrarRaiz(parent, parent[i]);
+}
+
+void unirConjuntos(int parent[], int rank[], int raiz1, int raiz2) {
+    int raizX = encontrarRaiz(parent, raiz1);
+    int raizY = encontrarRaiz(parent, raiz2);
+    
+    if (rank[raizX] < rank[raizY]) {
+        parent[raizX] = raizY;
+    } else if (rank[raizX] > rank[raizY]) {
+        parent[raizY] = raizX;
+    } else {
+        parent[raizY] = raizX;
+        rank[raizX]++;
+    }
+}
+
+int compararCabos(const void *a, const void *b) {
+    Cabo *caboA = (Cabo *)a;
+    Cabo *caboB = (Cabo *)b;
+    return caboA->custo - caboB->custo;
+}
+
+int main() {
+    int qtdRoteadores, qtdCabos;
+    scanf("%d %d", &qtdRoteadores, &qtdCabos);
+
+    Cabo cabos[qtdCabos];
+    for (int i = 0; i < qtdCabos; i++) {
+        scanf("%d %d %d", &cabos[i].origem, &cabos[i].destino, &cabos[i].custo);
+    }
+
+    // Ordenar os cabos pelo custo
+    qsort(cabos, qtdCabos, sizeof(Cabo), compararCabos);
+
+    int parent[qtdRoteadores + 1];
+    int rank[qtdRoteadores + 1];
+
+    for (int i = 1; i <= qtdRoteadores; i++) {
+        parent[i] = i;
+        rank[i] = 0;
+    }
+
+    int custoTotal = 0;
+    int cabosSelecionados = 0;
+
+    for (int i = 0; i < qtdCabos && cabosSelecionados < qtdRoteadores - 1; i++) {
+        int raizOrigem = encontrarRaiz(parent, cabos[i].origem);
+        int raizDestino = encontrarRaiz(parent, cabos[i].destino);
+
+        if (raizOrigem != raizDestino) {
+            custoTotal += cabos[i].custo;
+            unirConjuntos(parent, rank, raizOrigem, raizDestino);
+            cabosSelecionados++;
+        }
+    }
+
+    printf("%d\n", custoTotal);
+
+    return 0;
+}
