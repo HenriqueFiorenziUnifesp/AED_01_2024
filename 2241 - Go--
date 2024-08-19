@@ -1,0 +1,42 @@
+#include <stdio.h>
+
+#define MAX 500
+
+int prefixoPreto[MAX+1][MAX+1];
+int prefixoBranco[MAX+1][MAX+1];
+
+void atualizarPrefixo(int prefixo[MAX+1][MAX+1], int l, int c) {
+    for (int i = l; i <= MAX; i += (i & -i)) {
+        for (int j = c; j <= MAX; j += (j & -j)) {
+            prefixo[i][j]++;
+        }
+    }
+}
+
+int consultarPrefixo(int prefixo[MAX+1][MAX+1], int l, int c) {
+    int soma = 0;
+    for (int i = l; i > 0; i -= (i & -i)) {
+        for (int j = c; j > 0; j -= (j & -j)) {
+            soma += prefixo[i][j];
+        }
+    }
+    return soma;
+}
+
+int somaSubArea(int prefixo[MAX+1][MAX+1], int l1, int c1, int l2, int c2) {
+    return consultarPrefixo(prefixo, l2, c2) - consultarPrefixo(prefixo, l1-1, c2) 
+           - consultarPrefixo(prefixo, l2, c1-1) + consultarPrefixo(prefixo, l1-1, c1-1);
+}
+
+int main() {
+    int N, P;
+    scanf("%d %d", &N, &P);
+
+    for (int i = 0; i < P; i++) {
+        int l, c;
+        scanf("%d %d", &l, &c);
+        atualizarPrefixo(prefixoPreto, l, c);
+    }
+
+
+}
