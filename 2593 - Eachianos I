@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char text[10001];
+    char words[128][51];
+    int text_length, num_words, i, j, k;
+    
+    fgets(text, 10001, stdin);
+    text_length = strlen(text);
+    if (text[text_length - 1] == '\n')
+        text[--text_length] = '\0';
+    
+    scanf("%d", &num_words);
+    
+
+    for (i = 0; i < num_words; i++)
+        scanf("%s", words[i]);
+    
+
+    for (i = 0; i < num_words; i++) {
+        int word_length = strlen(words[i]);
+        int found = 0;
+        
+        for (j = 0; j <= text_length - word_length; j++) {
+            int match = 1;
+            
+
+            for (k = 0; k < word_length; k++) {
+                if (text[j + k] != words[i][k]) {
+                    match = 0;
+                    break;
+                }
+            }
+            
+
+            if (match && (j == 0 || text[j - 1] == ' ') && (j + word_length == text_length || text[j + word_length] == ' ')) {
+                printf("%d ", j);
+                found = 1;
+            }
+        }
+        
+
+        if (!found) {
+            printf("-1");
+        }
+        
+        printf("\n");
+    }
+    
+    return 0;
+}
