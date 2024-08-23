@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <string.h>
+
+int conta_diamantes(char *mina) {
+    int count = 0;
+    int diamantes = 0;
+    int i;
+
+    for (i = 0; mina[i] != '\0'; i++) {
+        if (mina[i] == '<') {
+            count++;
+        } else if (mina[i] == '>' && count > 0) {
+            count--;
+            diamantes++;
+        }
+    }
+
+    return diamantes;
+}
+
+int main() {
+    int n, i;
+    scanf("%d", &n);
+    char mina[1001];
+
+    for (i = 0; i < n; i++) {
+        scanf("%s", mina);
+        printf("%d\n", conta_diamantes(mina));
+    }
+
+    return 0;
+}
