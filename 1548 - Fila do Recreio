@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int compare(const void *a, const void *b) {
+    return (*(int *)b - *(int *)a);
+}
+
+int main() {
+    int numTestes;
+    scanf("%d", &numTestes);
+    
+    while (numTestes--) {
+        int numAlunos;
+        scanf("%d", &numAlunos);
+        
+        int notas[numAlunos], notasOrdenadas[numAlunos];
+        for (int i = 0; i < numAlunos; i++) {
+            scanf("%d", &notas[i]);
+            notasOrdenadas[i] = notas[i];
+        }
+        
+        qsort(notasOrdenadas, numAlunos, sizeof(int), compare);
+        
+        int count = 0;
+        for (int i = 0; i < numAlunos; i++) {
+            if (notas[i] == notasOrdenadas[i]) {
+                count++;
+            }
+        }
+        
+        printf("%d\n", count);
+    }
+    
+    return 0;
+}
