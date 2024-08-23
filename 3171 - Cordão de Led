@@ -1,0 +1,62 @@
+#include <stdio.h>
+
+#define MAX 100
+
+int encontrar(int pai[], int i) {
+    if (pai[i] == i)
+        return i;
+    return encontrar(pai, pai[i]);
+}
+
+void unir(int pai[], int altura[], int x, int y) {
+    int raizX = encontrar(pai, x);
+    int raizY = encontrar(pai, y);
+
+    if (raizX != raizY) {
+        if (altura[raizX] < altura[raizY]) {
+            pai[raizX] = raizY;
+        } else if (altura[raizX] > altura[raizY]) {
+            pai[raizY] = raizX;
+        } else {
+            pai[raizY] = raizX;
+            altura[raizX]++;
+        }
+    }
+}
+
+int main() {
+    int numSegmentos, numLigacoes;
+    scanf("%d %d", &numSegmentos, &numLigacoes);
+
+    int pai[MAX + 1];
+    int altura[MAX + 1];
+
+    for (int i = 1; i <= numSegmentos; i++) {
+        pai[i] = i;
+        altura[i] = 0;
+    }
+
+    for (int i = 0; i < numLigacoes; i++) {
+        int segmento1, segmento2;
+        scanf("%d %d", &segmento1, &segmento2);
+        unir(pai, altura, segmento1, segmento2);
+    }
+
+    int raizInicial = encontrar(pai, 1);
+    int completo = 1;
+
+    for (int i = 2; i <= numSegmentos; i++) {
+        if (encontrar(pai, i) != raizInicial) {
+            completo = 0;
+            break;
+        }
+    }
+
+    if (completo) {
+        printf("COMPLETO\n");
+    } else {
+        printf("INCOMPLETO\n");
+    }
+
+    return 0;
+}
