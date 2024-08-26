@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_POMEKONS 151
+#define TAM_MAX_NOME 100
+
+typedef struct Nodo {
+    char valor[TAM_MAX_NOME];
+    struct Nodo* proximo;
+} Nodo;
+
+typedef struct {
+    Nodo* inicio;
+    Nodo* fim;
+    int tamanho;
+} ListaEncadeada;
+
+void inicializarLista(ListaEncadeada* lista) {
+    lista->inicio = NULL;
+    lista->fim = NULL;
+    lista->tamanho = 0;
+}
+
+void adicionarNoFim(ListaEncadeada* lista, const char* valor) {
+    Nodo* novo = (Nodo*)malloc(sizeof(Nodo));
+    strcpy(novo->valor, valor);
+    novo->proximo = NULL;
+
+    if (lista->tamanho == 0) {
+        lista->inicio = novo;
+        lista->fim = novo;
+    } else {
+        lista->fim->proximo = novo;
+        lista->fim = novo;
+    }
+
+    lista->tamanho++;
+}
+
+void adicionarNoInicio(ListaEncadeada* lista, const char* valor) {
+    Nodo* novo = (Nodo*)malloc(sizeof(Nodo));
+    strcpy(novo->valor, valor);
+    novo->proximo = lista->inicio;
+
+    if (lista->tamanho == 0) {
+        lista->fim = novo;
+    }
+
+    lista->inicio = novo;
+    lista->tamanho++;
+}
+
+int contem(ListaEncadeada* lista, const char* valor) {
+    Nodo* temp = lista->inicio;
+    while (temp != NULL) {
+        if (strcmp(temp->valor, valor) == 0) {
+            return 1;
+        }
+        temp = temp->proximo;
+    }
+    return 0;
+}
+
+int obterTamanho(ListaEncadeada* lista) {
+    return lista->tamanho;
+}
+
+void liberarLista(ListaEncadeada* lista) {
+    Nodo* temp = lista->inicio;
+    Nodo* proximo;
+    while (temp != NULL) {
+        proximo = temp->proximo;
+        free(temp);
+        temp = proximo;
+    }
+    lista->inicio = NULL;
+    lista->fim = NULL;
+    lista->tamanho = 0;
+}
+
+int main() {
+    ListaEncadeada pomekons;
+    inicializarLista(&pomekons);
+
+    int qtdPomekons = MAX_POMEKONS;
+    int N;
+    scanf("%d", &N);
+
+    for (int i = 0; i < N; i++) {
+        char pomekon[TAM_MAX_NOME];
+        scanf("%s", pomekon);
+
+        if (!contem(&pomekons, pomekon)) {
+            adicionarNoFim(&pomekons, pomekon);
+        }
+    }
+
+    printf("Falta(m) %d pomekon(s).\n", qtdPomekons - obterTamanho(&pomekons));
+
+    liberarLista(&pomekons);
+    return 0;
+}
