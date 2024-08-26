@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 1001
+
+typedef struct {
+    int data[MAX];
+    int top;
+} Stack;
+
+typedef struct {
+    int data[MAX];
+    int front, rear;
+} Queue;
+
+typedef struct {
+    int data[MAX];
+    int size;
+} PriorityQueue;
+
+void push(Stack *s, int x) {
+    s->data[++s->top] = x;
+}
+
+int pop(Stack *s) {
+    return s->data[s->top--];
+}
+
+int isEmptyStack(Stack *s) {
+    return s->top == -1;
+}
+
+void enqueue(Queue *q, int x) {
+    q->data[q->rear++] = x;
+}
+
+int dequeue(Queue *q) {
+    return q->data[q->front++];
+}
+
+int isEmptyQueue(Queue *q) {
+    return q->front == q->rear;
+}
+
+void insertPriorityQueue(PriorityQueue *pq, int x) {
+    pq->data[pq->size++] = x;
+}
+
+int extractMax(PriorityQueue *pq) {
+    int maxIdx = 0;
+    for (int i = 1; i < pq->size; i++) {
+        if (pq->data[i] > pq->data[maxIdx]) {
+            maxIdx = i;
+        }
+    }
+    int max = pq->data[maxIdx];
+    pq->data[maxIdx] = pq->data[--pq->size];
+    return max;
+}
+
+int isEmptyPriorityQueue(PriorityQueue *pq) {
+    return pq->size == 0;
+}
+
+int main() {
+    int n, cmd, x;
+    Stack stack;
+    Queue queue;
+    PriorityQueue pq;
+    
+    while (scanf("%d", &n) != EOF) {
+        stack.top = -1;
+        queue.front = 0;
+        queue.rear = 0;
+        pq.size = 0;
+        
+        int isStack = 1, isQueue = 1, isPriorityQueue = 1;
+        
+        for (int i = 0; i < n; i++) {
+            scanf("%d", &cmd);
+            
+            if (cmd == 1) {
+                scanf("%d", &x);
+                push(&stack, x);
+                enqueue(&queue, x);
+                insertPriorityQueue(&pq, x);
+            } else if (cmd == 2) {
+                scanf("%d", &x);
+                if (isStack) {
+                    if (isEmptyStack(&stack) || pop(&stack) != x) {
+                        isStack = 0;
+                    }
+                }
+                if (isQueue) {
+                    if (isEmptyQueue(&queue) || dequeue(&queue) != x) {
+                        isQueue = 0;
+                    }
+                }
+                if (isPriorityQueue) {
+                    if (isEmptyPriorityQueue(&pq) || extractMax(&pq) != x) {
+                        isPriorityQueue = 0;
+                    }
+                }
+            }
+        }
+        
+        if (isStack + isQueue + isPriorityQueue > 1) {
+            printf("not sure\n");
+        } else if (isStack) {
+            printf("stack\n");
+        } else if (isQueue) {
+            printf("queue\n");
+        } else if (isPriorityQueue) {
+            printf("priority queue\n");
+        } else {
+            printf("impossible\n");
+        }
+    }
+    
+    return 0;
+}
