@@ -1,27 +1,31 @@
 #include <stdio.h>
-#include <string.h>
 
-int main() {
-    int N;
-    float L;
-    float Q;
-    char participantes[10][13];
+int main(void) {
+    int total;
+    float length, decrement;
 
-    scanf("%d %f %f", &N, &L, &Q);
+    scanf("%d%f%f", &total, &length, &decrement);
 
-    for (int i = 0; i < N; i++) {
-        scanf("%s", participantes[i]);
-    }
-    
-    int cuias_completas = (int)(L / Q);
-    float agua_restante = L - cuias_completas * Q;
-    
-    int indice_ultimo_participante = (cuias_completas % N) - 1;
-    if (indice_ultimo_participante < 0) {
-        indice_ultimo_participante = N - 1;
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF) {
     }
 
-    printf("%s %.1f\n", participantes[indice_ultimo_participante], agua_restante);
+    char names[total][12];
+    for (int index = 0; index < total; index++) {
+        scanf("%s", names[index]);
+    }
+
+    float current_value = length;
+    int position = 0;
+    while (current_value > decrement) {
+        current_value -= decrement;
+        position++;
+        if (position == total) {
+            position = 0;
+        }
+    }
+
+    printf("%s %.1f\n", names[position], current_value);
 
     return 0;
 }
