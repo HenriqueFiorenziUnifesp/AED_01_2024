@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int n, i, j;
+    int pilha[50], descartadas[50];
+
+    while (scanf("%d", &n) && n != 0) {
+        for (i = 0; i < n; i++) {
+            pilha[i] = i + 1;
+        }
+        
+        int topo = 0, base = n - 1, cont_descartadas = 0;
+
+        while (topo < base) {
+            descartadas[cont_descartadas++] = pilha[topo++];
+            pilha[++base] = pilha[topo++];
+        }
+
+        printf("Discarded cards:");
+        if (cont_descartadas > 0) {
+            printf(" %d", descartadas[0]);
+            for (j = 1; j < cont_descartadas; j++) {
+                printf(", %d", descartadas[j]);
+            }
+        }
+        printf("\nRemaining card: %d\n", pilha[topo]);
+    }
+
+    return 0;
+}
