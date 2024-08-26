@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Presente {
+    char nome[100];
+    double preco;
+    int preferencia;
+} Presente;
+
+typedef struct No {
+    Presente valor;
+    struct No* proximo;
+} No;
+
+typedef struct ListaOrdenada {
+    No* cabeca;
+    No* cauda;
+    int tamanho;
+} ListaOrdenada;
+
+void inicializarLista(ListaOrdenada* lista) {
+    lista->cabeca = NULL;
+    lista->cauda = NULL;
+    lista->tamanho = 0;
+}
+
+void adicionarPresente(ListaOrdenada* lista, Presente presente) {
+    No* novoNo = (No*)malloc(sizeof(No));
+    novoNo->valor = presente;
+    novoNo->proximo = NULL;
+
+    if (lista->tamanho == 0) {
+        lista->cabeca = novoNo;
+        lista->cauda = novoNo;
+    } else if (ordem(lista->cabeca->valor, presente)) {
+        novoNo->proximo = lista->cabeca;
+        lista->cabeca = novoNo;
+    } else if (ordem(presente, lista->cauda->valor)) {
+        lista->cauda->proximo = novoNo;
+        lista->cauda = novoNo;
+    } else {
+        No* temp = lista->cabeca;
+        No* pre = temp;
+
+        while (temp != NULL && ordem(presente, temp->valor)) {
+            pre = temp;
+            temp = temp->proximo;
+        }
+
+        pre->proximo = novoNo;
+        novoNo->proximo = temp;
+    }
+
+    lista->tamanho++;
+}
+
+int ordem(Presente x, Presente y) {
+    if (x.preferencia < y.preferencia) {
+        return 1;
+    } else if (x.preferencia == y.preferencia) {
+        if (x.preco > y.preco) {
+            return 1;
+        } else if (x.preco == y.preco) {
+            return strcmp(x.nome, y.nome) > 0;
+        }
+    }
+    return 0;
+}
+
+void imprimirLista(ListaOrdenada* lista) {
+    No* temp = lista->cabeca;
+    while (temp != NULL) {
+        printf("%s - R$%.2f\n", temp->valor.nome, temp->valor.preco);
+        temp = temp->proximo;
+    }
+}
+
+int main() {
+    ListaOrdenada lista;
+    inicializarLista(&lista);
+
+    char nome[100];
+    int qtdPresente;
+
+    while (scanf("%s", nome) != EOF) {
+        scanf("%d", &qtdPresente);
+        getchar();
+
+        for (int i = 0; i < qtdPresente; i++) {
+            Presente presente;
+            fgets(presente.nome, 100, stdin);
+            presente.nome[strcspn(presente.nome, "\n")] = '\0';
+            scanf("%lf %d", &presente.preco, &presente.preferencia);
+            getchar();
+
+            adicionarPresente(&lista, presente);
+        }
+
+        printf("Lista de %s\n", nome);
+        imprimirLista(&lista);
+        printf("\n");
+
+        while (lista.cabeca != NULL) {
+            No* temp = lista.cabeca;
+            lista.cabeca = lista.cabeca->proximo;
+            free(temp);
+        }
+        lista.cauda = NULL;
+        lista.tamanho = 0;
+    }
+
+    return 0;
+}
