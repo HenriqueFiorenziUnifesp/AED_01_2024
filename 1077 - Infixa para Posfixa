@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 300
+
+// Pilha para operadores
+typedef struct {
+    char arr[MAX];
+    int topo;
+} Pilha;
+
+void inicializa(Pilha* p) {
+    p->topo = -1;
+}
+
+int vazia(Pilha* p) {
+    return p->topo == -1;
+}
+
+char topo(Pilha* p) {
+    return p->arr[p->topo];
+}
+
+void empilha(Pilha* p, char valor) {
+    p->arr[++(p->topo)] = valor;
+}
+
+char desempilha(Pilha* p) {
+    return p->arr[(p->topo)--];
+}
+
+// Retorna a precedência dos operadores
+int precedencia(char operador) {
+    switch (operador) {
+        case '^': return 3;
+        case '*':
+        case '/': return 2;
+        case '+':
+        case '-': return 1;
+        default: return 0;
+    }
+}
+
+// Converte de infixa para posfixa
+void infixaParaPosfixa(char* expressao, char* resultado) {
+    Pilha operadores;
+    inicializa(&operadores);
+    int k = 0;
+
+    for (int i = 0; expressao[i] != '\0'; i++) {
+        char caractere = expressao[i];
+
+        if (isalnum(caractere)) {
+            resultado[k++] = caractere;
+        } else if (caractere == '(') {
+            empilha(&operadores, caractere);
+        } else if (caractere == ')') {
+            while (!vazia(&operadores) && topo(&operadores) != '(') {
+                resultado[k++] = desempilha(&operadores);
+            }
+            desempilha(&operadores); // remove '(' da pilha
+        } else {
+            while (!vazia(&operadores) && precedencia(topo(&operadores)) >= precedencia(caractere)) {
+                resultado[k++] = desempilha(&operadores);
+            }
+            empilha(&operadores, caractere);
+        }
+    }
+
+    while (!vazia(&operadores)) {
+        resultado[k++] = desempilha(&operadores);
+    }
+
+    resultado[k] = '\0';
+}
+
+int main() {
+    int N;
+    char expressao[MAX + 1];
+    char resultado[MAX + 1];
+
+    scanf("%d", &N);
+    while (N--) {
+        scanf("%s", expressao);
+        infixaParaPosfixa(expressao, resultado);
+        printf("%s\n", resultado);
+    }
+
+    return 0;
+}
