@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAX_INPUT_LENGTH 1000
+
+typedef struct No {
+    char chave;
+    struct No *proximo;
+} No;
+
+No* criarNo(char chave) {
+    No *novoNo = (No*)malloc(sizeof(No));
+    if (novoNo == NULL) {
+        fprintf(stderr, "Erro ao alocar memória.\n");
+        exit(EXIT_FAILURE);
+    }
+    novoNo->chave = chave;
+    novoNo->proximo = NULL;
+    return novoNo;
+}
+
+void empurrar(No **topo, char chave) {
+    No *novoNo = criarNo(chave);
+    novoNo->proximo = *topo;
+    *topo = novoNo;
+}
+
+char remover(No **topo) {
+    if (*topo == NULL) {
+        return '\0';
+    }
+    No *temp = *topo;
+    char chave = temp->chave;
+    *topo = temp->proximo;
+    free(temp);
+    return chave;
+}
+
+char verificarTopo(No *topo) {
+    if (topo == NULL) {
+        return '\0';
+    }
+    return topo->chave;
+}
+
+bool estaVazia(No *topo) {
+    return topo == NULL;
+}
+
+void liberarPilha(No *topo) {
+    No *temp;
+    while (topo != NULL) {
+        temp = topo;
+        topo = topo->proximo;
+        free(temp);
+    }
+}
+
+int main() {
+    char entrada[MAX_INPUT_LENGTH];
+    
+    while (fgets(entrada, sizeof(entrada), stdin)) {
+        No *pilha = NULL;
+        bool balanceado = true;
+        size_t comprimento = strlen(entrada);
+
+        for (size_t i = 0; i < comprimento; ++i) {
+            char caractere = entrada[i];
+            if (caractere == '(') {
+                empurrar(&pilha, caractere);
+            } else if (caractere == ')') {
+                if (estaVazia(pilha)) {
+                    balanceado = false;
+                    break;
+                }
+                char topo = remover(&pilha);
+                if (topo != '(') {
+                    balanceado = false;
+                    break;
+                }
+            }
+        }
+
+        if (!estaVazia(pilha)) {
+            balanceado = false;
+        }
+
+        liberarPilha(pilha);
+
+        printf("%s\n", balanceado ? "correct" : "incorrect");
+    }
+
+    return 0;
+}
