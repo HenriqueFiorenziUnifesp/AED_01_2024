@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+typedef struct No {
+    int valor;
+    struct No *proximo;
+} No;
+
+typedef struct Fila {
+    No *inicio;
+    No *fim;
+    int tamanho;
+} Fila;
+
+Fila* criarFila() {
+    Fila *fila = (Fila*)malloc(sizeof(Fila));
+    fila->inicio = NULL;
+    fila->fim = NULL;
+    fila->tamanho = 0;
+    return fila;
+}
+
+void enfileirar(Fila *fila, int valor) {
+    No *novoNo = (No*)malloc(sizeof(No));
+    novoNo->valor = valor;
+    novoNo->proximo = NULL;
+
+    if (fila->tamanho == 0) {
+        fila->inicio = novoNo;
+        fila->fim = novoNo;
+    } else {
+        fila->fim->proximo = novoNo;
+        fila->fim = novoNo;
+    }
+
+    fila->tamanho++;
+}
+
+No* desenfileirar(Fila *fila) {
+    if (fila->tamanho == 0) return NULL;
+
+    No *temp = fila->inicio;
+
+    if (fila->tamanho == 1) {
+        fila->inicio = NULL;
+        fila->fim = NULL;
+    } else {
+        fila->inicio = fila->inicio->proximo;
+    }
+
+    fila->tamanho--;
+    return temp;
+}
+
+int main() {
+    Fila *mediaSeguidores = criarFila();
+
+    long seguidores;
+    long seguidoresEsperados;
+    scanf("%ld %ld", &seguidores, &seguidoresEsperados);
+
+    double dias = 30.00;
+    int soma = 0;
+
+    for (int i = 0; i < dias; i++) {
+        int valores;
+        scanf("%d", &valores);
+        enfileirar(mediaSeguidores, valores);
+        soma += valores;
+    }
+
+    int contadorDias = 0;
+
+    while (seguidores <= seguidoresEsperados) {
+        int media = (int)ceil(soma / dias);
+
+        seguidores += media;
+
+        No *removido = desenfileirar(mediaSeguidores);
+        soma -= removido->valor;
+        free(removido);
+
+        enfileirar(mediaSeguidores, media);
+        soma += media;
+
+        contadorDias++;
+    }
+
+    printf("%d\n", contadorDias);
+
+    // Liberar memória restante
+    while (mediaSeguidores->tamanho > 0) {
+        No *removido = desenfileirar(mediaSeguidores);
+        free(removido);
+    }
+    free(mediaSeguidores);
+
+    return 0;
+}
