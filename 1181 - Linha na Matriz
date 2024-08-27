@@ -1,0 +1,29 @@
+#include <stdio.h>
+
+int main() {
+    double tabela[12][12] = {0};
+
+    int linhaSelecionada = 0;
+    char tipoOperacao = '\0';
+
+    scanf("%d %c", &linhaSelecionada, &tipoOperacao);
+
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++) {
+            scanf("%lf", &tabela[i][j]);
+        }
+    }
+
+    double resultado = 0;
+    for (int j = 0; j < 12; j++) {
+        resultado += tabela[linhaSelecionada][j];
+    }
+
+    if (tipoOperacao == 'M') {
+        resultado /= 12.0;
+    }
+
+    printf("%.1lf\n", resultado);
+
+    return 0;
+}
