@@ -1,0 +1,144 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_VALOR 100
+#define MAX_AVIOES 10000
+
+typedef struct Nodo {
+    char valor[MAX_VALOR];
+    struct Nodo* proximo;
+} Nodo;
+
+typedef struct Fila {
+    Nodo* primeiro;
+    Nodo* ultimo;
+    int tamanho;
+} Fila;
+
+Fila* criar_fila() {
+    Fila* fila = (Fila*)malloc(sizeof(Fila));
+    fila->primeiro = NULL;
+    fila->ultimo = NULL;
+    fila->tamanho = 0;
+    return fila;
+}
+
+void enfileirar(Fila* fila, const char* valor) {
+    Nodo* novo_nodo = (Nodo*)malloc(sizeof(Nodo));
+    strncpy(novo_nodo->valor, valor, MAX_VALOR - 1);
+    novo_nodo->valor[MAX_VALOR - 1] = '\0';
+    novo_nodo->proximo = NULL;
+
+    if (fila->tamanho == 0) {
+        fila->primeiro = novo_nodo;
+        fila->ultimo = novo_nodo;
+    } else {
+        fila->ultimo->proximo = novo_nodo;
+        fila->ultimo = novo_nodo;
+    }
+
+    fila->tamanho++;
+}
+
+Nodo* desenfileirar(Fila* fila) {
+    if (fila->tamanho == 0) return NULL;
+
+    Nodo* temp = fila->primeiro;
+    fila->primeiro = fila->primeiro->proximo;
+    if (fila->tamanho == 1) {
+        fila->ultimo = NULL;
+    }
+    fila->tamanho--;
+
+    return temp;
+}
+
+int fila_vazia(Fila* fila) {
+    return fila->tamanho == 0;
+}
+
+void liberar_fila(Fila* fila) {
+    while (!fila_vazia(fila)) {
+        Nodo* temp = desenfileirar(fila);
+        free(temp);
+    }
+    free(fila);
+}
+
+int main() {
+    Fila* leste = criar_fila();
+    Fila* norte = criar_fila();
+    Fila* sul = criar_fila();
+    Fila* oeste = criar_fila();
+    Fila* juntos = criar_fila();
+
+    char ponto[MAX_VALOR];
+    char temp[10] = "";
+
+    while (1) {
+        scanf("%s", ponto);
+
+        if (strcmp(ponto, "0") == 0) break;
+
+        if (strcmp(ponto, "-1") == 0 || strcmp(ponto, "-2") == 0 || strcmp(ponto, "-3") == 0 || strcmp(ponto, "-4") == 0) {
+            strcpy(temp, ponto);
+        } else {
+            if (strcmp(temp, "-1") == 0) {
+                enfileirar(oeste, ponto);
+            } else if (strcmp(temp, "-2") == 0) {
+                enfileirar(sul, ponto);
+            } else if (strcmp(temp, "-3") == 0) {
+                enfileirar(norte, ponto);
+            } else if (strcmp(temp, "-4") == 0) {
+                enfileirar(leste, ponto);
+            }
+        }
+    }
+
+    while (!fila_vazia(oeste) || !fila_vazia(norte) || !fila_vazia(sul) || !fila_vazia(leste)) {
+        if (!fila_vazia(oeste)) {
+            Nodo* temp = desenfileirar(oeste);
+            enfileirar(juntos, temp->valor);
+            free(temp);
+        }
+        if (!fila_vazia(norte)) {
+            Nodo* temp = desenfileirar(norte);
+            enfileirar(juntos, temp->valor);
+            free(temp);
+        }
+        if (!fila_vazia(sul)) {
+            Nodo* temp = desenfileirar(sul);
+            enfileirar(juntos, temp->valor);
+            free(temp);
+        }
+        if (!fila_vazia(leste)) {
+            Nodo* temp = desenfileirar(leste);
+            enfileirar(juntos, temp->valor);
+            free(temp);
+        }
+    }
+
+    char avioes[MAX_AVIOES] = "";
+    while (!fila_vazia(juntos)) {
+        Nodo* temp = desenfileirar(juntos);
+        strcat(avioes, temp->valor);
+        strcat(avioes, " ");
+        free(temp);
+    }
+
+    // Remove the trailing space if present
+    if (strlen(avioes) > 0 && avioes[strlen(avioes) - 1] == ' ') {
+        avioes[strlen(avioes) - 1] = '\0';
+    }
+
+    printf("%s\n", avioes);
+
+    liberar_fila(leste);
+    liberar_fila(norte);
+    liberar_fila(sul);
+    liberar_fila(oeste);
+    liberar_fila(juntos);
+
+    return 0;
+}
