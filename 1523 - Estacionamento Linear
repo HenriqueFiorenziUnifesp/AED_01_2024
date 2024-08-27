@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX 10000
+
+typedef struct {
+    int dados[MAX];
+    int topo;
+} Pilha;
+
+void inicializarPilha(Pilha *p) {
+    p->topo = -1;
+}
+
+bool pilhaVazia(Pilha *p) {
+    return p->topo == -1;
+}
+
+bool pilhaCheia(Pilha *p) {
+    return p->topo == MAX - 1;
+}
+
+void empilhar(Pilha *p, int valor) {
+    if (!pilhaCheia(p)) {
+        p->dados[++(p->topo)] = valor;
+    }
+}
+
+void desempilhar(Pilha *p) {
+    if (!pilhaVazia(p)) {
+        p->topo--;
+    }
+}
+
+int topo(Pilha *p) {
+    if (!pilhaVazia(p)) {
+        return p->dados[p->topo];
+    }
+    return -1; // valor inválido
+}
+
+int main() {
+    int n, k, c, s;
+
+    while (scanf("%d %d", &n, &k) == 2 && (n || k)) {
+        Pilha estacionamento;
+        inicializarPilha(&estacionamento);
+        bool flag = true;
+
+        for (int i = 0; i < n; i++) {
+            scanf("%d %d", &c, &s);
+
+            while (!pilhaVazia(&estacionamento) && topo(&estacionamento) <= c) {
+                desempilhar(&estacionamento);
+            }
+
+            if (estacionamento.topo + 1 >= k) {
+                flag = false;
+            } else {
+                if (pilhaVazia(&estacionamento) || topo(&estacionamento) > s) {
+                    empilhar(&estacionamento, s);
+                } else {
+                    flag = false;
+                }
+            }
+        }
+
+        if (flag) {
+            printf("Sim\n");
+        } else {
+            printf("Nao\n");
+        }
+    }
+
+    return 0;
+}
