@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+#define MAX 10000
+
+typedef struct Nodo {
+    int vertice;
+    struct Nodo* proximo;
+} Nodo;
+
+Nodo* grafo[MAX];
+bool visitado[MAX];
+int saldo[MAX];
+int n, m;
+
+void adicionarAresta(int origem, int destino) {
+    Nodo* novoNodo = (Nodo*)malloc(sizeof(Nodo));
+    novoNodo->vertice = destino;
+    novoNodo->proximo = grafo[origem];
+    grafo[origem] = novoNodo;
+
+    novoNodo = (Nodo*)malloc(sizeof(Nodo));
+    novoNodo->vertice = origem;
+    novoNodo->proximo = grafo[destino];
+    grafo[destino] = novoNodo;
+}
+
+void dfs(int v, int *soma) {
+    visitado[v] = true;
+    *soma += saldo[v];
+    Nodo* nodo = grafo[v];
+    while (nodo != NULL) {
+        if (!visitado[nodo->vertice]) {
+            dfs(nodo->vertice, soma);
+        }
+        nodo = nodo->proximo;
+    }
+}
+
+int main() {
+    scanf("%d %d", &n, &m);
+
+    for (int i = 0; i < n; i++) {
+        saldo[i] = 0;
+        grafo[i] = NULL;
+    }
+
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &saldo[i]);
+    }
+
+    for (int i = 0; i < m; i++) {
+        int x, y;
+        scanf("%d %d", &x, &y);
+        adicionarAresta(x, y);
+    }
+
+    bool possivel = true;
+    for (int i = 0; i < n; i++) {
+        visitado[i] = false;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (!visitado[i]) {
+            int soma = 0;
+            dfs(i, &soma);
+            if (soma != 0) {
+                possivel = false;
+                break;
+            }
+        }
+    }
+
+    if (possivel) {
+        printf("POSSIBLE\n");
+    } else {
+        printf("IMPOSSIBLE\n");
+    }
+
+    return 0;
+}
