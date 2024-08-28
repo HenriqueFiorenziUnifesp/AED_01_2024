@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    int n;
+    char s1[51], s2[51];
+    
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%s %s", s1, s2);
+        
+        int t1 = strlen(s1), t2 = strlen(s2), k = 0;
+        char resultado[102];
+        
+        for (int j = 0; j < t1 || j < t2; j++) {
+            if (j < t1) resultado[k++] = s1[j];
+            if (j < t2) resultado[k++] = s2[j];
+        }
+        resultado[k] = '\0';
+        
+        printf("%s\n", resultado);
+    }
+
+    return 0;
+}
