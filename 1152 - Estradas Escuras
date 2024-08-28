@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int origem, destino, peso;
+} Aresta;
+
+int comparar(const void *a, const void *b) {
+    return ((Aresta *)a)->peso - ((Aresta *)b)->peso;
+}
+
+int encontrar(int pai[], int i) {
+    if (pai[i] == i) return i;
+    return pai[i] = encontrar(pai, pai[i]);
+}
+
+void unir(int pai[], int rank[], int x, int y) {
+    int raizX = encontrar(pai, x);
+    int raizY = encontrar(pai, y);
+    if (rank[raizX] < rank[raizY]) pai[raizX] = raizY;
+    else if (rank[raizX] > rank[raizY]) pai[raizY] = raizX;
+    else {
+        pai[raizY] = raizX;
+        rank[raizX]++;
+    }
+}
+
+int main() {
+    int m, n;
+    while (scanf("%d %d", &m, &n) && (m || n)) {
+        Aresta arestas[200000];
+        int pai[200000], rank[200000];
+        int total = 0, custo_arvore = 0;
+        
+        for (int i = 0; i < n; i++) {
+            scanf("%d %d %d", &arestas[i].origem, &arestas[i].destino, &arestas[i].peso);
+            total += arestas[i].peso;
+        }
+
+        for (int i = 0; i < m; i++) {
+            pai[i] = i;
+            rank[i] = 0;
+        }
+
+        qsort(arestas, n, sizeof(Aresta), comparar);
+
+        for (int i = 0; i < n; i++) {
+            int u = encontrar(pai, arestas[i].origem);
+            int v = encontrar(pai, arestas[i].destino);
+            if (u != v) {
+                custo_arvore += arestas[i].peso;
+                unir(pai, rank, u, v);
+            }
+        }
+
+        printf("%d\n", total - custo_arvore);
+    }
+
+    return 0;
+}
