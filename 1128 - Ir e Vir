@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX 2000
+
+typedef struct Nodo {
+    int vertice;
+    struct Nodo* proximo;
+} Nodo;
+
+Nodo* grafo[MAX];
+Nodo* grafoInvertido[MAX];
+bool visitado[MAX];
+int n, m;
+
+void adicionarAresta(Nodo* grafo[], int origem, int destino) {
+    Nodo* novoNodo = (Nodo*)malloc(sizeof(Nodo));
+    novoNodo->vertice = destino;
+    novoNodo->proximo = grafo[origem];
+    grafo[origem] = novoNodo;
+}
+
+void dfs(int v) {
+    visitado[v] = true;
+    Nodo* nodo = grafo[v];
+    while (nodo != NULL) {
+        if (!visitado[nodo->vertice]) {
+            dfs(nodo->vertice);
+        }
+        nodo = nodo->proximo;
+    }
+}
+
+void dfsInvertido(int v) {
+    visitado[v] = true;
+    Nodo* nodo = grafoInvertido[v];
+    while (nodo != NULL) {
+        if (!visitado[nodo->vertice]) {
+            dfsInvertido(nodo->vertice);
+        }
+        nodo = nodo->proximo;
+    }
+}
+
+bool verificarConexidade() {
+    for (int i = 0; i < n; i++) {
+        visitado[i] = false;
+    }
+    
+    dfs(0);
+
+    for (int i = 0; i < n; i++) {
+        if (!visitado[i]) {
+            return false;
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        visitado[i] = false;
+    }
+
+    dfsInvertido(0);
+
+    for (int i = 0; i < n; i++) {
+        if (!visitado[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+int main() {
+    while (true) {
+        scanf("%d %d", &n, &m);
+        if (n == 0 && m == 0) {
+            break;
+        }
+
+        for (int i = 0; i < n; i++) {
+            grafo[i] = NULL;
+            grafoInvertido[i] = NULL;
+        }
+
+        for (int i = 0; i < m; i++) {
+            int v, w, p;
+            scanf("%d %d %d", &v, &w, &p);
+            v--;
+            w--;
+
+            adicionarAresta(grafo, v, w);
+            adicionarAresta(grafoInvertido, w, v);
+
+            if (p == 2) {
+                adicionarAresta(grafo, w, v);
+                adicionarAresta(grafoInvertido, v, w);
+            }
+        }
+
+        if (verificarConexidade()) {
+            printf("1\n");
+        } else {
+            printf("0\n");
+        }
+    }
+    return 0;
+}
