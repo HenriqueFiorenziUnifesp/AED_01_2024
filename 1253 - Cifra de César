@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    int n, deslocamento;
+    char texto[51];
+    
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%s", texto);
+        scanf("%d", &deslocamento);
+
+        int tamanho = strlen(texto);
+        for (int j = 0; j < tamanho; j++) {
+            texto[j] = (texto[j] - 'A' - deslocamento + 26) % 26 + 'A';
+        }
+
+        printf("%s\n", texto);
+    }
+    
+    return 0;
+}
