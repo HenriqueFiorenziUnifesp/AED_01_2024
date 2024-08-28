@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <string.h>
+
+void construir_posfixa(char *prefixa, char *infixa, int n) {
+    if (n <= 0) return;
+    
+    int raiz = strchr(infixa, prefixa[0]) - infixa;
+    
+    construir_posfixa(prefixa + 1, infixa, raiz);
+    construir_posfixa(prefixa + 1 + raiz, infixa + raiz + 1, n - raiz - 1);
+    
+    printf("%c", prefixa[0]);
+}
+
+int main() {
+    int c, n;
+    char prefixa[53], infixa[53];
+    
+    scanf("%d", &c);
+    while (c--) {
+        scanf("%d %s %s", &n, prefixa, infixa);
+        construir_posfixa(prefixa, infixa, n);
+        printf("\n");
+    }
+    
+    return 0;
+}
